@@ -1,9 +1,9 @@
 import React from "react";
 import "./styles.scss"
+import useVisualMode from "hooks/useVisualMode";
 import Header from "./Header";
 import Show from "./Show"
 import Empty from "./Empty";
-import useVisualMode from "hooks/useVisualMode";
 import Form from "./Form";
 
 const EMPTY = "EMPTY";
@@ -15,6 +15,15 @@ export default function Appointment(props) {
 		props.interview ? SHOW : EMPTY
 	);
 
+	function save(name, interviewer) {
+		const interview = {
+			student: name,
+			interviewer
+		};
+		props.bookInterview(props.id, interview);
+		transition(SHOW);
+	}
+
 	return (
 		<article className="appointment">
 			<Header time={props.time} />
@@ -24,8 +33,9 @@ export default function Appointment(props) {
 				/>}
 			{mode === CREATE &&
 				<Form
-					interviewers={[]}
+					interviewers={props.interviewers}
 					onCancel={() => back(EMPTY)}
+					onSave={save}
 				/>}
 			{mode === SHOW && (
 				<Show
