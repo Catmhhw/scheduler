@@ -22,6 +22,26 @@ export default function useApplicationData() {
 	}, [])
 
 
+	// Where is the value of "spots" stored for each day?
+	// 		state.days
+	// How can we calculate how many spots should be available?
+	//		the number of appointments that are null
+	// When should that value change?
+	// 		when you book or cancel an interview
+
+	function spotsRemaining(id, available) {
+		state.days.forEach((day) => {
+			if (day.appointments.includes(id)) {
+				if (available) {
+					day.spots += 1;
+				} else {
+					day.spots -= 1;
+				}
+			}
+		})
+	}
+
+
 	function bookInterview(id, interview) {
 		const appointment = {
 			...state.appointments[id],
@@ -34,7 +54,11 @@ export default function useApplicationData() {
 		};
 
 		return axios.put(`/api/appointments/${id}`, { interview })
-			.then(setState({ ...state, appointments }));
+			.then(() => {
+				spotsRemaining(id, false)
+				setState({ ...state, appointments });
+			})
+			
 	}
 
 
@@ -50,8 +74,12 @@ export default function useApplicationData() {
 		};
 
 		return axios.delete(`/api/appointments/${id}`)
-			.then(setState({ ...state, appointments }));
+		.then(() => {
+			spotsRemaining(id, true)
+			setState({ ...state, appointments })
+		})
 	}
 
 	return { state, setDay, bookInterview, cancelInterview }
 }
+
