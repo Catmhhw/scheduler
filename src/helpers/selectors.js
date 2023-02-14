@@ -13,7 +13,6 @@ export function getInterview(state, interview) {
         return null;
     }
     const interviewer = state.interviewers[interview.interviewer];
-    console.log ({...interview, interviewer})
     return {...interview, interviewer};
 }
 
