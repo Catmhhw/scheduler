@@ -29,17 +29,20 @@ export default function useApplicationData() {
 	// When should that value change?
 	// 		when you book or cancel an interview
 
-	function spotsRemaining(id, available) {
-		state.days.forEach((day) => {
-			if (day.appointments.includes(id)) {
-				if (available) {
-					day.spots += 1;
-				} else {
-					day.spots -= 1;
-				}
-			}
-		})
-	}
+  const updateSpots = (newAppointments ) => {
+    let results = []
+      state.days.forEach((day) => {
+        let freeSpots = 0
+        for (let appointmentID of day.appointments ) {
+          if (newAppointments[appointmentID].interview === null){
+            freeSpots ++
+          }
+        }
+        results.push({...day, spots: freeSpots})
+        // console.log("DAY", day)
+      });
+      return results;
+  };
 
 
 	function bookInterview(id, interview) {
@@ -52,11 +55,11 @@ export default function useApplicationData() {
 			...state.appointments,
 			[id]: appointment
 		};
-
+    let days = updateSpots(appointments)
 		return axios.put(`/api/appointments/${id}`, { interview })
+
 			.then(() => {
-				spotsRemaining(id, false)
-				setState({ ...state, appointments });
+				setState({ ...state, appointments, days });
 			})
 			
 	}
@@ -72,11 +75,10 @@ export default function useApplicationData() {
 			...state.appointments,
 			[id]: appointment
 		};
-
+    let days = updateSpots(appointments)
 		return axios.delete(`/api/appointments/${id}`)
 		.then(() => {
-			spotsRemaining(id, true)
-			setState({ ...state, appointments })
+			setState({ ...state, appointments, days })
 		})
 	}
 
