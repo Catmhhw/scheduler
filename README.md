@@ -9,6 +9,7 @@ Interview Scheduler is a single-page application (SPA) that allows users to book
 ## Setup
 
 Install dependencies with `npm install`. 
+
 Follow instructions to install scheduler-api: https://github.com/Catmhhw/scheduler-api
 
 ## Running Webpack Development Server
